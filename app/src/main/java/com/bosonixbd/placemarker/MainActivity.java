@@ -1,6 +1,8 @@
 package com.bosonixbd.placemarker;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AppCompatActivity;
@@ -42,6 +44,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         Button currentLocationBtn = findViewById(R.id.currentLocation);
         currentLocationBtn.setOnClickListener(view -> requestCurrentLocation());
+
+        Button saveButton = findViewById(R.id.saveCordinate);
+        Button placeBtn = findViewById(R.id.placeBtn);
+        placeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getBaseContext(), PlacesActivity.class));
+            }
+        });
+
     }
 
     @Override
