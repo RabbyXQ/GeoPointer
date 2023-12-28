@@ -21,41 +21,63 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import android.location.Location;
+import android.widget.ListView;
+
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import androidx.annotation.NonNull;
 import com.google.android.gms.location.FusedLocationProviderClient;
-
+import android.content.SharedPreferences;
+import java.util.ArrayList;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap myMap;
+    protected ListView listView;
+    protected CustomAdapter adapter;
     private Button currentLocationBtn;
-    private CurrentLocation presentLocation;
+    private double curr_x, curr_y;
     private FusedLocationProviderClient fusedLocationClient;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private Marker marker;
 
-    public PlacesList places;
+    public ArrayList<Place> places = new ArrayList<Place>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        retrievePlacesFromSharedPreferences();
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(MainActivity.this);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        EditText editName = findViewById(R.id.editTextText);
 
         Button currentLocationBtn = findViewById(R.id.currentLocation);
         currentLocationBtn.setOnClickListener(view -> requestCurrentLocation());
 
         Button saveButton = findViewById(R.id.saveCordinate);
-        saveButton.setOnClickListener(v->showCustomDialog());
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String placeName = editName.getText().toString();
+                curr_x = marker.getPosition().latitude;
+                curr_y = marker.getPosition().longitude;
+                marker.setTitle(placeName);
+                places.add(new Place(placeName, curr_x, curr_y));
+            }
+        });
         Button placeBtn = findViewById(R.id.placeBtn);
+
+
         placeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 startActivity(new Intent(getBaseContext(), PlacesActivity.class));
             }
         });
@@ -83,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             } else {
                 marker = myMap.addMarker(new MarkerOptions().position(latLng).title("Moved Marker"));
                 marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+
             }
         });
     }
@@ -99,6 +122,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             if (locationResult != null) {
                                 for (Location location : locationResult.getLocations()) {
                                     LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                    curr_x = location.getLatitude();
+                                    curr_y = location.getLongitude();
                                     myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15));
 
                                     MarkerOptions markerOptions = new MarkerOptions().position(currentLatLng).title("Current Location");
@@ -127,30 +152,50 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
     }
-    public void showCustomDialog() {
-        // Create a dialog instance
-        Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.custom_dialog_layout);
 
-        EditText editText1 = dialog.findViewById(R.id.editText1);
-        EditText editText2 = dialog.findViewById(R.id.editText2);
-        EditText editText3 = dialog.findViewById(R.id.editText3);
-        Button dialogButton = dialog.findViewById(R.id.dialogButton);
 
-        dialogButton.setOnClickListener(v -> {
-            // Perform action when the dialog button is clicked
-            String text1 = editText1.getText().toString();
-            String text2 = editText2.getText().toString();
-            String text3 = editText3.getText().toString();
-
-            // Process the input values here (e.g., validate, store, etc.)
-
-            // Dismiss the dialog
-            dialog.dismiss();
-        });
-
-        // Show the dialog
-        dialog.show();
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Save 'places' list to SharedPreferences when the app pauses
+        savePlacesToSharedPreferences();
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Save 'places' list to SharedPreferences when the app gets destroyed
+        savePlacesToSharedPreferences();
+    }
+
+    private void savePlacesToSharedPreferences() {
+        SharedPreferences prefs = getSharedPreferences("YourPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        // Convert 'places' list to JSON string
+        Gson gson = new Gson();
+        String placesJson = gson.toJson(places);
+
+        // Save the JSON string to SharedPreferences
+        editor.putString("placesList", placesJson);
+        editor.apply();
+    }
+
+    private void retrievePlacesFromSharedPreferences() {
+        SharedPreferences prefs = getSharedPreferences("YourPrefs", MODE_PRIVATE);
+        String placesJson = prefs.getString("placesList", null);
+
+        if (placesJson != null) {
+            // Convert JSON string back to 'places' list
+            Gson gson = new Gson();
+            Type type = new TypeToken<ArrayList<Place>>(){}.getType();
+            places = gson.fromJson(placesJson, type);
+        } else {
+            // If 'placesList' key is not found or null, create a new list
+            places = new ArrayList<Place>();
+        }
+    }
+
+
     // Implement onPause, onDestroy, and onLowMemory similarly to onResume
 }

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class PlacesList implements Serializable {
-    private ArrayList<Place> placeArrayList;
+    private ArrayList<Place> placeArrayList = new ArrayList<Place>();
     public void add(Place place)
     {
         placeArrayList.add(place);

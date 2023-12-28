@@ -35,11 +35,31 @@
             android:textSize="16sp"/>
     </LinearLayout>
 
-    <Button
-        android:id="@+id/gotoMapButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Go to Map"
-        android:layout_gravity="end"/>
+   <LinearLayout
+       android:layout_margin="10dp"
+       android:padding="10dp"
+       android:layout_gravity="center"
+       android:gravity="center"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:orientation="horizontal">
+       <Button
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:id="@+id/deleteItem"
+           android:text="Delete"
+           android:layout_gravity="start"/>
+       <Button
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:id="@+id/share"
+           android:text="Share"/>
+       <Button
+           android:id="@+id/gotoMapButton"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="Navigate"
+           android:layout_gravity="end"/>
+   </LinearLayout>
 
 </LinearLayout>

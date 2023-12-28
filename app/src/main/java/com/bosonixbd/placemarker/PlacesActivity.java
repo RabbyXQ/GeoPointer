@@ -3,27 +3,57 @@ package com.bosonixbd.placemarker;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.widget.EditText;
 import android.widget.ListView;
 import java.util.ArrayList;
-public class PlacesActivity extends AppCompatActivity {
+import java.util.Collections;
+import android.text.Editable;
+import android.text.TextWatcher;
+public class PlacesActivity extends MainActivity {
 
-    private ListView listView;
+    private EditText searchBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_places);
 
-        // Sample data - Replace this with your actual data source
-        ArrayList<Place> places = new ArrayList<>();
-        places.add(new Place("Dhaka", 23.777176, 90.399452));
-        places.add(new Place("Place B", 34.0522, -118.2437));
-        places.add(new Place("Place C", 51.5074, -0.1278));
-
+        searchBar = findViewById(R.id.search);
         listView = findViewById(R.id.listView);
 
-        // Create and set the custom adapter
-        CustomAdapter adapter = new CustomAdapter(this, R.layout.list_item_layout, places);
+        // Assuming 'places' is the ArrayList you want to filter
+        Collections.reverse(places);
+
+        adapter = new CustomAdapter(this, R.layout.list_item_layout, places);
         listView.setAdapter(adapter);
+
+        // Implementing the search functionality
+        searchBar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                // Not used, but required to override
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                String userInput = charSequence.toString().toLowerCase().trim();
+                ArrayList<Place> filteredList = new ArrayList<>();
+
+                // Loop through the places list to filter based on user input
+                for (Place place : places) {
+                    if (place.getPlaceName().toLowerCase().contains(userInput)) {
+                        filteredList.add(place);
+                    }
+                }
+
+                adapter = new CustomAdapter(PlacesActivity.this, R.layout.list_item_layout, filteredList);
+                listView.setAdapter(adapter);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                // Not used, but required to override
+            }
+        });
     }
 }
