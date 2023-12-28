@@ -2,16 +2,17 @@ package com.bosonixbd.placemarker;
 
 import java.io.Serializable;
 
-public class Place implements Serializable {
+public class Place implements Serializable{
     private String placeName;
-    private String lattitude;
-    private String longitude;
+    private double latitude;
+    private double longitude;
 
-    public Place(String placeName, String lattitude, String longitude) {
+    public Place(String placeName, double latitude, double longitude) {
         this.placeName = placeName;
-        this.lattitude = lattitude;
+        this.latitude = latitude;
         this.longitude = longitude;
     }
+
 
     public String getPlaceName() {
         return placeName;
@@ -21,19 +22,21 @@ public class Place implements Serializable {
         this.placeName = placeName;
     }
 
-    public String getLattitude() {
-        return lattitude;
+    public double getLatitude() {
+        return latitude;
     }
 
-    public void setLattitude(String lattitude) {
-        this.lattitude = lattitude;
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
     }
 
-    public String getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(String longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
+// Getters for placeName, latitude, and longitude
+    // Add getters and setters as per your requirement
 }

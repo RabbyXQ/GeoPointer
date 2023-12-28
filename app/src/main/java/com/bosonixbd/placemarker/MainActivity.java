@@ -2,12 +2,14 @@ package com.bosonixbd.placemarker;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.app.Dialog;
 import android.view.View;
 import android.widget.Button;
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.maps.GoogleMap;
 import android.Manifest;
+import android.widget.EditText;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.MapView;
 import android.content.pm.PackageManager;
@@ -29,9 +31,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private GoogleMap myMap;
     private Button currentLocationBtn;
+    private CurrentLocation presentLocation;
     private FusedLocationProviderClient fusedLocationClient;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private Marker marker;
+
+    public PlacesList places;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         currentLocationBtn.setOnClickListener(view -> requestCurrentLocation());
 
         Button saveButton = findViewById(R.id.saveCordinate);
+        saveButton.setOnClickListener(v->showCustomDialog());
         Button placeBtn = findViewById(R.id.placeBtn);
         placeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,13 +62,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
+
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         myMap = googleMap;
-
         LatLng sydney = new LatLng(-34, 151);
+
         myMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         marker = myMap.addMarker(new MarkerOptions().position(sydney).title("Sydney"));
+
+
+        requestCurrentLocation();
+
         marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
 
         myMap.setOnMapClickListener(latLng -> {
@@ -115,6 +127,30 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
     }
+    public void showCustomDialog() {
+        // Create a dialog instance
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.custom_dialog_layout);
 
+        EditText editText1 = dialog.findViewById(R.id.editText1);
+        EditText editText2 = dialog.findViewById(R.id.editText2);
+        EditText editText3 = dialog.findViewById(R.id.editText3);
+        Button dialogButton = dialog.findViewById(R.id.dialogButton);
+
+        dialogButton.setOnClickListener(v -> {
+            // Perform action when the dialog button is clicked
+            String text1 = editText1.getText().toString();
+            String text2 = editText2.getText().toString();
+            String text3 = editText3.getText().toString();
+
+            // Process the input values here (e.g., validate, store, etc.)
+
+            // Dismiss the dialog
+            dialog.dismiss();
+        });
+
+        // Show the dialog
+        dialog.show();
+    }
     // Implement onPause, onDestroy, and onLowMemory similarly to onResume
 }
