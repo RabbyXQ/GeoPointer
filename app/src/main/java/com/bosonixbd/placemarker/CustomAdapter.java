@@ -18,7 +18,9 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.widget.Toast;
 public class CustomAdapter extends ArrayAdapter<Place> {
 
     private Context mContext;
@@ -92,17 +94,13 @@ public class CustomAdapter extends ArrayAdapter<Place> {
 
                 // Start an intent to open a map using the coordinates
                 Uri gmmIntentUri = Uri.parse("google.navigation:q=" + destLat + "," + destLon + "&mode=d");
-                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-                mapIntent.setPackage("com.google.android.apps.maps");
 
-                // Check if Google Maps app is available
-                if (mapIntent.resolveActivity(mContext.getPackageManager()) != null) {
-                    // If Google Maps app is available, start the navigation
-                    mContext.startActivity(mapIntent);
-                } else {
-                    // If Google Maps app is not available, handle the situation
-                    // You can prompt the user to install Google Maps or use a different approach
-                    // For instance, opening a browser with Google Maps web version.
+                // Copy the URI as text to the clipboard
+                ClipboardManager clipboard = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("Google Maps URI", gmmIntentUri.toString());
+                if (clipboard != null) {
+                    clipboard.setPrimaryClip(clip);
+                    Toast.makeText(mContext, "Map link copied", Toast.LENGTH_SHORT).show();
                 }
             });
         }

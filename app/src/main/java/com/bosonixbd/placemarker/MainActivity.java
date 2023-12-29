@@ -3,6 +3,7 @@ package com.bosonixbd.placemarker;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Dialog;
+import android.widget.Toast;
 import android.view.View;
 import android.widget.Button;
 import androidx.core.app.ActivityCompat;
@@ -22,7 +23,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import android.location.Location;
 import android.widget.ListView;
-
+import android.content.Context;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -65,10 +66,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View v) {
                 String placeName = editName.getText().toString();
-                curr_x = marker.getPosition().latitude;
-                curr_y = marker.getPosition().longitude;
-                marker.setTitle(placeName);
-                places.add(new Place(placeName, curr_x, curr_y));
+                if(placeName.isEmpty())
+                {
+                    showToast(getApplicationContext(), "Please Give a name to the marked place or your current location");
+                }else
+                {
+                    curr_x = marker.getPosition().latitude;
+                    curr_y = marker.getPosition().longitude;
+                    marker.setTitle(placeName);
+                    places.add(new Place(placeName, curr_x, curr_y));
+                }
             }
         });
         Button placeBtn = findViewById(R.id.placeBtn);
@@ -83,7 +90,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
 
     }
-
+    private void showToast(Context context, String message) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+    }
 
 
     @Override
